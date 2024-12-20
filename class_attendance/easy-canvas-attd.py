@@ -1,10 +1,11 @@
 import pandas as pd
 import os
 from collections import Counter
-from names_and_emails_hash import full_name_hash,email_hash
+from names_and_emails_hash import email_hash
+import os
 
-keys=full_name_hash.keys()
-vals=full_name_hash.values()
+keys=email_hash.keys()
+vals=email_hash.values()
 absentees = []
 attd_sheets = sorted(os.listdir("data"))
 
@@ -19,10 +20,11 @@ def update_present_emails(full_name,email,present):
     if pd.notnull(email):
         present.append(email)
     else:
-        partial_name = full_name.split(",")[0]
-        missing_email = find_missing_emails(partial_name)
-        if missing_email:
-            present.append(missing_email)
+        pass
+        # partial_name = full_name.split(",")[0]
+        # missing_email = find_missing_emails(partial_name)
+        # if missing_email:
+        #     present.append(missing_email)
 def print_names_emails_and_absence(absentees_freq):
     for mail in absentees_freq:
         print(f"{mail:<30}",f"{email_hash[mail]:<20}",f"{'--->':<5}",f"{absentees_freq[mail]:<3}")
@@ -40,12 +42,14 @@ def read_columns_from_morning_and_afternoon():
             for ind in range(len(df)):
                 try:
                     full_name = ",".join(str(df.iloc[ind][0]).strip().split()).lower()
+                    
                     email = df.iloc[ind][1]
+                    # print(full_name,email)
                     
                     update_present_emails(full_name,email,emails_present)
                 except:
                     continue                    
-            absentees_per_session = set(vals) - set(emails_present)                    
+            absentees_per_session = set(keys) - set(emails_present)                    
             emails_present = []
             absentees += list(absentees_per_session) 
         absent_freq = Counter(absentees)
@@ -57,7 +61,10 @@ def read_columns_from_morning_and_afternoon():
         return None
     
 def main():
+    os.system('clear')
     read_columns_from_morning_and_afternoon()
+    os.system('rm data/*.csv') 
+
 
 
 if __name__== "__main__":
